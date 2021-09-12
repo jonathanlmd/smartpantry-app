@@ -2,26 +2,39 @@ import React from 'react';
 import { useUserContext } from './context/userContext';
 import Login from './screens/Login';
 import PantryRegistry from './screens/PantryRegistry';
-import PantryScreen from './screens/PantryScreen';
+import PantryScreen from './navigation/TabNavigation';
+import { SafeAreaView } from 'react-native';
 
 
-function Main(): JSX.Element {
+function Main({ navigation }): JSX.Element {
 	const { user } = useUserContext();
 
-	if (!user.name) {
+	if (!user.id) {
 		return (
-			<Login />
+			<SafeAreaView
+				style={{ flex: 1 }}
+			>
+				<Login />
+			</SafeAreaView>
 		)
 	}
 
 	if (!user.pantryId) {
 		return (
-			<PantryRegistry />
+			<SafeAreaView
+				style={{ flex: 1 }}
+			>
+				<PantryRegistry />
+			</SafeAreaView>
 		)
 	}
 
 	return (
-		<PantryScreen />
+		<SafeAreaView
+			style={{ flex: 1 }}
+		>
+			<PantryScreen />
+		</SafeAreaView>
 	);
 }
 

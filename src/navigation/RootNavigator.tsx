@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { navigationRef } from './RootNavigation';
 
 import { RootStackParamList } from './interfaces';
-import Login from '../screens/Login';
+import CameraScreen from '../screens/CameraScreen';
 import MainScreen from '../Main';
 
 
@@ -13,11 +13,10 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 
 function RootNavigator() {
-	console.log("ROOT NAVIGATOR");
 	return (
 		<NavigationContainer ref={navigationRef}>
 			<Stack.Navigator
-				key="DefaultNavigator"
+				key="StackNavigator"
 				initialRouteName="MainScreen"
 			>
 				<Stack.Screen
@@ -27,13 +26,21 @@ function RootNavigator() {
 					}}
 					component={MainScreen}
 				/>
-				{/* <Stack.Screen
-					name="MainScreen"
+				<Stack.Screen
+					component={CameraScreen}
 					options={{
-						headerShown: false,
+						headerTitleAlign: 'center',
+						headerTitle: 'Camera',
+						// headerTitleStyle: {
+						// color: 'white',
+						// fontFamily: 'RobotoSlab-Medium',
+						// },
+						headerStyle: {
+							elevation: 0,
+						},
 					}}
-					component={MainScreen}
-				/> */}
+					name="CameraScreen"
+				/>
 			</Stack.Navigator>
 		</NavigationContainer>
 	);

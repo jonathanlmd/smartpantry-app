@@ -1,11 +1,10 @@
 import { Colors, Typography, Spacings, Assets } from 'react-native-ui-lib';
-import { Ionicons } from '@expo/vector-icons';
 
 Colors.loadColors({
 	primaryColor: '#7FD671',
 	secondaryColor: '#BE2F39',
-	// thirdColor: '#2364AA',
-	// fourthColor: '#81C3D7',
+	thirdColor: '#2364AA',
+	fourthColor: '#81C3D7',
 	textColor: '#221D23',
 	errorColor: '#E63B2E',
 	successColor: '#ADC76F',
@@ -29,4 +28,5 @@ Spacings.loadSpacings({
 
 Assets.loadAssetsGroup('icons', {
 	search: 'md-checkmark-circle',
+	scanner: 'qr-code-outline',
 });

@@ -16,7 +16,6 @@ function AnimatedSplashScreen({ children, logo }): JSX.Element {
 	);
 
 	React.useEffect(() => {
-		console.log(isAppReady);
 		if (isAppReady) {
 			Animated.timing(animation, {
 				toValue: 0,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, KeyboardAvoidingView, StyleSheet, Platform } from 'react-native';
+import { ScrollView, KeyboardAvoidingView, StyleSheet, Platform, ToastAndroid } from 'react-native';
 import {
 	Checkbox,
 	TextField,
@@ -21,28 +21,50 @@ export default function Login() {
 	const { setUser } = useUserContext();
 	const [password, setPassword] = React.useState('');
 	const [confirmPassword, setConfirmPassword] = React.useState('');
-	const [confirmPasswordError, setConfirmPasswordError] = React.useState('');
 	const [newUser, setNewUser] = React.useState(false);
 	const [loading, setLoading] = React.useState(false);
 	const passwordRef = React.useRef(null);
 	const confirmPasswordRef = React.useRef(null);
 
 	const submit = React.useCallback(async () => {
-		console.log('SUBMIT');
+		setLoading(true);
+
 		if (newUser && confirmPassword !== password) {
-			setConfirmPasswordError('Senhas não coincidem.')
+			ToastAndroid.show('Senhas não coincidem.', 3000);
+			return;
 		}
 
-		const user = await api.post(newUser ? '/new-user' : '/login');
-		setUser(user.data);
+		if (!username.trim() || !password.trim()) {
+			ToastAndroid.show('Entre com usuário e senha.', 3000);
+			setLoading(false);
+			return;
+		}
 
-		// if (!user.data.pantryId) {
-		// 	navigate("PantryRegistry");
-		// } else {
-		// 	navigate("PantryScreen");
-		// }
+		if (newUser && !confirmPassword.trim()) {
+			ToastAndroid.show('Confirme sua senha.', 3000);
+			setLoading(false);
+			return;
+		}
 
-	}, []);
+		api.post(newUser ? '/user' : '/sessions/login', {
+			username,
+			password,
+			confirmPassword: confirmPassword || undefined,
+		}).then((response) => {
+			if (response.data.id) {
+				setUser({
+					...response.data,
+					pantryId: response.data.pantry[0]?.id || null,
+					pantryName: response.data.pantry[0]?.name || null
+				});
+			}
+		}).catch((error) => {
+			ToastAndroid.show(error.response.data.message, 3000);
+		}).finally(() => {
+			setLoading(false);
+		});
+
+	}, [username, password, confirmPassword, newUser]);
 
 	return (
 		<KeyboardAvoidingView
