@@ -42,6 +42,7 @@ export default function Login() {
 					...user,
 					pantryId: response.data.id,
 					pantryName: name,
+					pantryHash: hash,
 				});
 			}
 		}).catch((error) => {

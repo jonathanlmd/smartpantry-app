@@ -52,14 +52,16 @@ export default function Login() {
 			confirmPassword: confirmPassword || undefined,
 		}).then((response) => {
 			if (response.data.id) {
+				console.log("Login", response.data);
 				setUser({
 					...response.data,
 					pantryId: response.data.pantry[0]?.id || null,
-					pantryName: response.data.pantry[0]?.name || null
+					pantryName: response.data.pantry[0]?.name || null,
+					pantryHash: response.data.hash || null,
 				});
 			}
 		}).catch((error) => {
-			ToastAndroid.show(error.response.data.message, 3000);
+			ToastAndroid.show(error?.response?.data?.message, 3000);
 		}).finally(() => {
 			setLoading(false);
 		});

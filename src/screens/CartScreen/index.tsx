@@ -5,17 +5,53 @@ import {
 	Text,
 	LoaderScreen,
 	Colors,
+	Avatar,
 } from 'react-native-ui-lib';
-import { navigate } from '../../navigation/RootNavigation';
-import { api } from "../../services/api";
 import { useUserContext } from "../../context/userContext";
+import { FlatList } from 'react-native-gesture-handler';
+import { Product, usePantryContext } from '../../context/pantryContext';
 
 
 
 
-export default function Login() {
+export default function CartScreen() {
 	const { user } = useUserContext();
 	const [loading, setLoading] = React.useState(false);
+	const { pantry } = usePantryContext();
+
+	React.useEffect(() => {
+		console.log(pantry.cartList);
+	}, [])
+
+	const renderItem = (data: Product, index) => {
+		return (
+			<View
+				bg-grey80
+				paddingH-20
+				paddingV-10
+				row
+				flex
+				centerV
+				style={{ borderBottomWidth: 1, borderColor: Colors.grey60 }}
+			>
+				{/* <Badge testID="drawer_item_badge" size={'pimpleSmall'} backgroundColor={Colors.red30} containerStyle={{ marginRight: 8 }} /> */}
+				<Avatar
+					source={{ uri: data.image }} />
+				<View
+					row flex style={{ paddingLeft: 12 }} flexG>
+					<View flex flexG style={{ flex: 9 }} >
+						<Text text70BO>{data.name}</Text>
+						<Text text80 marginT-2>
+							{data.averagePrice}
+						</Text>
+						<Text text80 marginT-2>
+							Quantidade: {data.quantity}
+						</Text>
+					</View>
+				</View>
+			</View>
+		)
+	}
 
 
 	return (
@@ -24,18 +60,11 @@ export default function Login() {
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 			keyboardVerticalOffset={10}
 			enabled>
-			<ScrollView
-				contentContainerStyle={styles.contentContainerStyle}
-				style={styles.container}
-			>
-				<View
-					style={styles.innerContainer}
-					width="100%"
-					height="100%"
-				>
-					<Text>Tela do carrinho</Text>
-				</View>
-			</ScrollView>
+			<FlatList
+				data={pantry.cartList}
+				keyExtractor={(value) => value.barcode}
+				renderItem={({ item, index }) => renderItem(item, index)}
+			/>
 			{loading ? <LoaderScreen color={Colors.blue30} overlay /> : null}
 		</KeyboardAvoidingView>
 	);

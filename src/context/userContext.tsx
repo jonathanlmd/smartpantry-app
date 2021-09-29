@@ -6,6 +6,7 @@ interface User {
 	name: String | null;
 	pantryId: String | null;
 	pantryName: String | null;
+	pantryHash: String | null;
 }
 interface ProviderProps { user?: User, children: React.ReactNode }
 
@@ -22,6 +23,7 @@ export function UserProvider({ children, user }: ProviderProps): JSX.Element {
 		name: null,
 		pantryId: null,
 		pantryName: null,
+		pantryHash: null,
 	})
 
 	const setUser = React.useCallback((userData: User) => {

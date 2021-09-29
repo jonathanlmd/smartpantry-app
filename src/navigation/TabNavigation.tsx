@@ -7,12 +7,51 @@ import CartScreen from '../screens/CartScreen';
 import { TabParamList } from './interfaces';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from 'react-native-ui-lib';
+import { useUserContext } from '../context/userContext';
+import { Product, usePantryContext } from '../context/pantryContext';
+import { api } from '../services/api';
+import { useMqtt } from '../hooks/mqttConector';
 
 
 
 const Tab = createBottomTabNavigator<TabParamList>()
 
 function TabNavigator() {
+
+	const { user } = useUserContext();
+	const { subscribe, unsubscribe } = useMqtt()
+	const { updateCartList, updateItems, updateQuantity, pantry } = usePantryContext()
+
+	const messageCallback = React.useCallback(({ topic, payload, packet, error }) => {
+		const bipedItem: Product = JSON.parse(payload);
+		const existentItem = pantry.items.find((item) => item.barcode === bipedItem.barcode);
+		if (existentItem) {
+			console.log("Aqui");
+			updateQuantity(bipedItem.barcode, 1)
+		} else {
+			console.log("Else");
+			updateItems([{
+				...bipedItem, quantity: 1
+			}]);
+		}
+	}, [])
+
+	React.useEffect(() => {
+		console.log(`pantry.added.${user.pantryHash}`)
+		subscribe(`pantry.added.${user.pantryHash}`, { nl: true, qos: 0 }, (topic, payload, packet, error) => messageCallback({ topic, payload, packet, error }))
+
+		return () => {
+			unsubscribe(`pantry.added${user.pantryHash}`)
+		}
+	}, [])
+
+	React.useEffect(() => {
+		api.get<{ items: Product[] }>(`/pantry/items/${user.id}`).then((response) => {
+			updateItems(response.data.items);
+			updateCartList(response.data.items.filter(item => item.quantity === 0));
+		})
+	}, [])
+
 	return (
 		<Tab.Navigator
 			key="TabNavigator"
@@ -43,23 +82,22 @@ function TabNavigator() {
 			<Tab.Screen
 				name="ProductScreen"
 				options={{
-					headerShown: false,
+					headerTitle: `${user.pantryName}`,
+					headerStyle: {
+						elevation: 0,
+					},
 				}}
 				component={ProductScreen}
 			/>
 			<Tab.Screen
 				component={CartScreen}
 				options={{
-					headerShown: false,
+					headerTitle: `Carrinho de Compras`,
+					headerStyle: {
+						elevation: 0,
+					},
 				}}
 				name="CartScreen"
-			/>
-			<Tab.Screen
-				component={ProfileScreen}
-				options={{
-					headerShown: false,
-				}}
-				name="ProfileScreen"
 			/>
 		</Tab.Navigator>
 	);
